@@ -15,7 +15,6 @@ const calendar = {
     "Belgium": new Date(2022, 7, 26),
     "Netherlands": new Date(2022, 8, 2),
     "Italy-Monza": new Date(2022, 8, 9),
-    "Russia": new Date(2022, 8, 23),
     "Singapore": new Date(2022, 8, 30),
     "Japan": new Date(2022, 9, 7),
     "USA": new Date(2022, 9, 21),
