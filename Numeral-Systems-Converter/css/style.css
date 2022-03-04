@@ -99,6 +99,18 @@ hr {
     scrollbar-color: var(--muteColor) #aaaaaa;
 }
 
+footer {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.git {
+    font-size: 20px;
+    color: var(--darkColor);
+}
+
 @media (max-width: 700px) {
     .container {
         width: 460px;
