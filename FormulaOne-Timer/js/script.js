@@ -1,35 +1,31 @@
-const calendar = {
-    "Bahrain": new Date(2022, 2, 18),
-    "Saudi_Arabia": new Date(2022, 2, 25),
-    "Australia": new Date(2022, 3, 8),
-    "Italy-Romagna": new Date(2022, 3, 22),
-    "USA-Miami": new Date(2022, 4, 6),
-    "Spain": new Date(2022, 4, 20),
-    "Monaco": new Date(2022, 4, 27),
-    "Azerbaijan": new Date(2022, 5, 10),
-    "Canada": new Date(2022, 5, 17),
-    "Great_Britain": new Date(2022, 6, 1),
-    "Austria": new Date(2022, 6, 8),
-    "France": new Date(2022, 6, 22),
-    "Hungary": new Date(2022, 6, 29),
-    "Belgium": new Date(2022, 7, 26),
-    "Netherlands": new Date(2022, 8, 2),
-    "Italy-Monza": new Date(2022, 8, 9),
-    "Singapore": new Date(2022, 8, 30),
-    "Japan": new Date(2022, 9, 7),
-    "USA": new Date(2022, 9, 21),
-    "Mexico": new Date(2022, 9, 28),
-    "Brazil": new Date(2022, 10, 11),
-    "Abu_Dhabi": new Date(2022, 10, 18)
+//--API--//
+class F1Service {
+    getInfo = async (id) => {
+        const res = await fetch(`http://ergast.com/api/f1/2022/${id}.json`, {method: 'GET', redirect: 'follow'});
+        return await res.json();
+    }
+
+    getDT = async (id) => {
+        const dt = await this.getInfo(id);
+        return {
+            date: dt.MRData.RaceTable.Races[0].date,
+            time: dt.MRData.RaceTable.Races[0].time,
+        }
+    }
 }
+//--API--//
+
+const f1 = new F1Service();
 
 const d = document.querySelector('#days'),
     h = document.querySelector('#hours'),
     m = document.querySelector('#min'),
     s = document.querySelector('#sec'),
+    //--START TIMER--//
     timer = setInterval(updateTimer, 1000);
+
 let remainTime, days, hours, minutes, seconds,
-    i = 0;
+    id = 1;
 
 function updateTimer() {
     getRemainingTime();
@@ -40,14 +36,16 @@ function updateTimer() {
     s.textContent = addZero(seconds);
 }
 
-function getRemainingTime() {
-    const deadline = Object.values(calendar)[i];
+async function getRemainingTime() {
+    const {date, time} = await f1.getDT(id);
+
+    const deadline = new Date(`${date}T${time}`);
 
     remainTime = Date.parse(deadline) - Date.parse(new Date());
-    if(remainTime == 0){
-        i++;
-        if(i == Object.keys(calendar).length){
-            i = 0;
+    if(remainTime <= 0){
+        id++;
+        if(id > 22){
+            id = 1;
         }
     }
 
