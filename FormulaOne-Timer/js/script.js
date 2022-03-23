@@ -10,6 +10,7 @@ class F1Service {
         return {
             date: dt.MRData.RaceTable.Races[0].date,
             time: dt.MRData.RaceTable.Races[0].time,
+            raceName: dt.MRData.RaceTable.Races[0].raceName,
         }
     }
 }
@@ -21,38 +22,49 @@ const d = document.querySelector('#days'),
     h = document.querySelector('#hours'),
     m = document.querySelector('#min'),
     s = document.querySelector('#sec'),
+    gpName = document.querySelector('#racename'),
     //--START TIMER--//
     timer = setInterval(updateTimer, 1000);
 
-let remainTime, days, hours, minutes, seconds,
-    id = 1;
+let remainTime, id = 1;
 
-function updateTimer() {
-    getRemainingTime();
+async function updateTimer() {
+    const {days, hours, minutes, seconds, raceName} = await getRemainingTime();
 
-    d.textContent = addZero(days);
-    h.textContent = addZero(hours);
-    m.textContent = addZero(minutes);
-    s.textContent = addZero(seconds);
+    if(seconds > 0) {
+        document.querySelectorAll('.shimmerBG').forEach(elem => {
+            elem.classList.remove('shimmerBG');
+        })
+
+        d.textContent = addZero(days);
+        h.textContent = addZero(hours);
+        m.textContent = addZero(minutes);
+        s.textContent = addZero(seconds);
+        gpName.textContent = `To ${raceName} remain`;
+    }
 }
 
 async function getRemainingTime() {
-    const {date, time} = await f1.getDT(id);
+    if(id > 22){
+        id = 1;
+    }
 
+    const {date, time, raceName} = await f1.getDT(id);
     const deadline = new Date(`${date}T${time}`);
 
     remainTime = Date.parse(deadline) - Date.parse(new Date());
+
     if(remainTime <= 0){
         id++;
-        if(id > 22){
-            id = 1;
-        }
     }
 
-    days = Math.floor(remainTime / (1000 * 60 * 60 * 24));
-    hours = Math.floor((remainTime / (1000 * 60 * 60)) % 24);
-    minutes = Math.floor((remainTime / (1000 * 60)) % 60);
-    seconds = Math.floor((remainTime / 1000) % 60);
+    return {
+        days: Math.floor(remainTime / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((remainTime / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((remainTime / (1000 * 60)) % 60),
+        seconds: Math.floor((remainTime / 1000) % 60),
+        raceName: raceName,
+    }
 }
 
 // Add zero like: 8 -> 08
