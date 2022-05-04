@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css2?family=DM+Mono&display=swap);
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;800&display=swap');
 
 * {
     box-sizing: border-box;
@@ -7,13 +7,13 @@
 }
 
 html {
-    font-family: "DM Mono";
+    font-family: 'Montserrat', sans-serif;
 }
 
 h1 {
     text-align: center;
     font-size: 72px;
-    font-weight: 400;
+    font-weight: 800;
 }
 
 .container {
@@ -54,13 +54,13 @@ h1 {
 
     color: #f1f1f1;
     font-size: 144px;
-    font-weight: 400;
+    font-weight: 500;
 }
 
 .timer-nums-name {
     color: #050505;
     font-size: 48px;
-    font-weight: 400;
+    font-weight: 600;
     text-align: center;
     margin-top: 7px;
 }
@@ -73,6 +73,7 @@ footer {
 }
 
 .git {
+    font-weight: 500;
     font-size: 20px;
     color: #f1f1f1;
 }
