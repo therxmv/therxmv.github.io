@@ -22,11 +22,14 @@ async function main() {
         m = document.querySelector('#min'),
         s = document.querySelector('#sec'),
         gpName = document.querySelector('#racename'),
-        {races} = await f1.getAllRaces();
+        {races} = await f1.getAllRaces(),
+        currentRaceId = getCurrentRace();
     
+    // set timer values
     async function updateTimer() {
         const {days, hours, minutes, seconds, raceName} = getData();
 
+        // remove shimmer animation
         document.querySelectorAll('.shimmerBG').forEach(elem => {
             elem.classList.remove('shimmerBG');
         })
@@ -39,36 +42,49 @@ async function main() {
     }
 
     const timer = setInterval(updateTimer, 1000);
-    
-    function getData() {
-        for(let i = 0; i < races.length; i++) {
-            const {date, time, raceName} = races[i];
-            
-            const deadline = new Date(`${date}T${time}`),
-                lastDeadline = new Date(`${races[races.length - 1].date}T${races[races.length - 1].time}`);
+
+    // returns id of current race
+    function getCurrentRace() {
+        for(let i = 0; i < races.length + 1; i++) {
+            // check if season ends
+            if(i == races.length) {
+                return -1;
+            }
+
+            // get gp start time
+            const {date, time} = races[i],
+                deadline = new Date(`${date}T${time}`);
 
             if(Date.parse(deadline) > Date.parse(new Date())) {
-                const remainTime = Date.parse(deadline) - Date.parse(new Date());
-
-                return {
-                    days: addZero(Math.floor(remainTime / (1000 * 60 * 60 * 24))),
-                    hours: addZero(Math.floor((remainTime / (1000 * 60 * 60)) % 24)),
-                    minutes: addZero(Math.floor((remainTime / (1000 * 60)) % 60)),
-                    seconds: addZero(Math.floor((remainTime / 1000) % 60)),
-                    raceName: `To ${raceName} remain`,
-                }
+                return i;
             }
-            else if (Date.parse(lastDeadline) <= Date.parse(new Date())){
-                clearInterval(timer);
+        }
+    }
+    
+    // returns remaining days, hours, ..., raceName to gp start
+    function getData() {
+        if(currentRaceId == -1) {
+            clearInterval(timer);
 
-                return {
-                    days: "00",
-                    hours: "00",
-                    minutes: "00",
-                    seconds: "00",
-                    raceName: `The end of season`,
-                }
+            return {
+                days: "00",
+                hours: "00",
+                minutes: "00",
+                seconds: "00",
+                raceName: `The end of season`,
             }
+        }
+
+        const {date, time, raceName} = races[currentRaceId],
+            deadline = new Date(`${date}T${time}`),
+            remainTime = Date.parse(deadline) - Date.parse(new Date());
+
+        return {
+            days: addZero(Math.floor(remainTime / (1000 * 60 * 60 * 24))),
+            hours: addZero(Math.floor((remainTime / (1000 * 60 * 60)) % 24)),
+            minutes: addZero(Math.floor((remainTime / (1000 * 60)) % 60)),
+            seconds: addZero(Math.floor((remainTime / 1000) % 60)),
+            raceName: `To ${raceName} remain`,
         }
     }
 
